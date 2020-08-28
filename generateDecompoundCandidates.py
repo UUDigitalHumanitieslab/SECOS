@@ -29,7 +29,7 @@ for l in sys.stdin:
         sys.stderr.write(str(i)+"\n")
     i+=1
 
-def getOverlap(w,ls):
+def getOverlap(w, ls):
     wl = w.lower()
     ret = []
     for l in ls:
@@ -42,7 +42,7 @@ def getOverlap(w,ls):
                     ret.append(l)
     return ret
 
-def addset(d,s):
+def addset(d, s):
     for w in s:
         if w in d:
             d[w]+=1
@@ -52,13 +52,13 @@ def addset(d,s):
 j = 0
 for w1 in dt:
     sims = dt[w1]
-    word_overlap = getOverlap(w1,sims)
+    word_overlap = getOverlap(w1, sims)
     sims_overlap = {}
     
     for w2 in sims:
         if w2 in dt:
-            overlap = getOverlap(w1,dt[w2])
-            sims_overlap = addset(sims_overlap,overlap)
+            overlap = getOverlap(w1, dt[w2])
+            sims_overlap = addset(sims_overlap, overlap)
     out1 = ""
     out2 = ""
     out3 = " ".join(word_overlap)
@@ -67,7 +67,7 @@ for w1 in dt:
         out2+=" "+w2+":"+str(sims_overlap[w2])
     out3 = out3+out1
     out1 = out1.strip()
-    print w1+"\t"+" ".join(word_overlap)+"\t"+out1+"\t"+out3+"\t"+out2
+    print(w1+"\t"+" ".join(word_overlap)+"\t"+out1+"\t"+out3+"\t"+out2)
     j+=1
     if j%1000000==0:
         sys.stderr.write(str(j)+"\t"+str(1.0*j/i)+"\n")

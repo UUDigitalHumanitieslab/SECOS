@@ -55,7 +55,7 @@ for l in nopen(file_wordcount):
     total_word_count+=wc
 
 def removeWord(w):
-    if len(w.replace("-",""))==0:
+    if len(w.replace("-", ""))==0:
         return True
     if min_word_count <=0:
         return False
@@ -64,10 +64,10 @@ def removeWord(w):
             return False
 
     return True
-def bylength(word1,word2):
+def bylength(word1, word2):
     return len(word2)-len(word1)
 
-def removeShortAndEqual(wc,ws):
+def removeShortAndEqual(wc, ws):
     nws=set()
     for w in ws:
         if len(w)>=min_word_length and w.lower()!=wc.lower() and not w.isupper() and w.lower() in wc.lower():
@@ -112,7 +112,7 @@ def getWordCounts(comp):
             sum*=(word_count[c]+epsilon)/(total_word_count+epsilon*len(word_count))
         else:
             sum*=epsilon/(total_word_count+epsilon*len(word_count))
-    return pow(1.0*sum,1.0/len(comp.split("-")))
+    return pow(1.0*sum, 1.0/len(comp.split("-")))
 
 def appendSuffixAndPrefix(w):
     sp = appendSuffix(appendPrefix(w))
@@ -124,15 +124,15 @@ def appendSuffixAndPrefix(w):
         return sp
     return ps
 
-def generateCompound(w,ws):
+def generateCompound(w, ws):
     #remove too short words
     #if debug: sys.out.write(ws
-    nws = removeShortAndEqual(w,ws)
+    nws = removeShortAndEqual(w, ws)
     if len(nws)==0:
         
         if debug: sys.stderr.write( "NONE: "+w+"\n")
         return None
-    nws_sorted = sorted(nws,cmp=bylength,reverse=True)
+    nws_sorted = sorted(nws, cmp=bylength, reverse=True)
     #get split points
     splits=set()
     for n in nws_sorted:
@@ -155,23 +155,23 @@ def generateCompound(w,ws):
         wc = wc[:-1]
     return wc
 
-def addCompound(comp,w,ws):
+def addCompound(comp, w, ws):
     if ws !=None:
         ws_merged = appendSuffixAndPrefix(ws)
         comp[w]=ws_merged
         if debug:sys.stderr.write( "Result: "+w+"\t"+ws+"\t"+ws_merged+"\n")
-def processCompound(comp,w,wns):
+def processCompound(comp, w, wns):
     wns_split = wns.split(" ")
     if "-" in w and dash_words ==1:
         return
     if dash_words ==2:
         ws = w.split("-")
         for wi in ws:
-            res = generateCompound(wi,wns_split)
-            addCompound(comp,wi,res)
+            res = generateCompound(wi, wns_split)
+            addCompound(comp, wi, res)
         return
-    res = generateCompound(w,wns_split)
-    addCompound(comp,w,res)
+    res = generateCompound(w, wns_split)
+    addCompound(comp, w, res)
 comp1 = {}
 comp2 ={}
 comp3 = {}
@@ -180,9 +180,9 @@ for l in nopen(file_knowledge):
     ls = l.rstrip("\n").split("\t")
     w = ls[0]
     if not removeWord(w):
-        processCompound(comp1,w,ls[1])
-        processCompound(comp2,w,ls[2])
-        processCompound(comp3,w,ls[3])
+        processCompound(comp1, w, ls[1])
+        processCompound(comp2, w, ls[2])
+        processCompound(comp3, w, ls[3])
 sys.stderr.write("extract single words\n")
 singlewords = set()
 for c in comp1:
@@ -193,7 +193,7 @@ sys.stderr.write("start decompound process\n")
 #for s in singlewords:
 #    k.write(s+"\n")
 #close(k)
-def containedIn(c,cands):
+def containedIn(c, cands):
     for cj in cands:
         if c.lower() in cj.lower() and c.lower()!=cj.lower():
             return True
@@ -205,16 +205,16 @@ def unknownWordCompounding(w):
             cands.add(s)
     cands_new = set()
     for ci in cands:
-        if not containedIn(ci,cands):
+        if not containedIn(ci, cands):
             cands_new.add(ci)
-    res = generateCompound(w,cands_new)
+    res = generateCompound(w, cands_new)
     if debug: sys.stderr.write("unknown1: "+res+"\n")
     if res==None:
         res = w
     else:
         res = appendSuffixAndPrefix(res)
     if debug: sys.stderr.write("unknown2: "+res+"\n")
-    return [res,cands_new]
+    return [res, cands_new]
 
 def getFirstDash(compounds):
     i = 0
@@ -232,7 +232,7 @@ def getMaxIdx(ls):
             val = l
             idx = i
         i+=1 
-    return [idx,val]
+    return [idx, val]
 
 def getHighestProb(compounds):
     probs = []
@@ -250,21 +250,21 @@ for l in sys.stdin:
         wc = -1
         if w in word_count:
             wc = word_count[w]
-        c1 = comp1.get(w,w)
-        c2 = comp2.get(w,w)
-        c3 = comp3.get(w,w)
-        [u,ufeats]=unknownWordCompounding(w)
+        c1 = comp1.get(w, w)
+        c2 = comp2.get(w, w)
+        c3 = comp3.get(w, w)
+        [u, ufeats]=unknownWordCompounding(w)
         cand = w
-        cands = [c1,c2,c3,u]
+        cands = [c1, c2, c3, u]
         idx = getFirstDash(cands)
         if idx>=0:
             cand = cands[idx]
-        [idx,prob] = getHighestProb(cands)
+        [idx, prob] = getHighestProb(cands)
         pcand = w
         if idx>=0:
             pcand = cands[idx]
-        text+=" " + pcand.replace("-" ," ")
-    print text.strip()
+        text+=" " + pcand.replace("-", " ")
+    print(text.strip())
     #    print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%d\t%s" %(pprefix,pcand,prefix,cand,c1,c2,c3,u,l.strip(),wc,ufeats) 
 
 
