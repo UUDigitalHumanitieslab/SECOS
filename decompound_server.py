@@ -4,6 +4,7 @@ import re
 import gzip 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
+from functools import cmp_to_key
 import socketserver
 
 
@@ -141,7 +142,7 @@ def generateCompound(w, ws):
         
         if debug: sys.stderr.write( "NONE: "+w+"\n")
         return None
-    nws_sorted = sorted(nws, cmp=bylength, reverse=True)
+    nws_sorted = sorted(nws, key=cmp_to_key(bylength), reverse=True)
     #get split points
     splits=set()
     for n in nws_sorted:
@@ -284,7 +285,7 @@ class Serv(BaseHTTPRequestHandler):
                 pcand = cands[idx]
             text+=" " + pcand.replace("-", " ")
             known_words[w] = pcand.replace("-", " ")
-        self.wfile.write(text)
+        self.wfile.write(text.encode("utf8"))
     #    print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%d\t%s" %(pprefix,pcand,prefix,cand,c1,c2,c3,u,l.strip(),wc,ufeats) 
 
 def run(server_class=HTTPServer, handler_class=Serv, port=80):
